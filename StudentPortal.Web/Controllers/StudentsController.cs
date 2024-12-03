@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using StudentPortal.Web.Data;
 using StudentPortal.Web.Models;
 using StudentPortal.Web.Models.Entiites;
@@ -7,11 +8,11 @@ namespace StudentPortal.Web.Controllers
 {
     public class StudentsController : Controller
     {
-        private readonly ApplicationDbContext dbcontext;
+        private readonly ApplicationDbContext dbContext;
 
-        public StudentsController(ApplicationDbContext dbcontext)
+        public StudentsController(ApplicationDbContext dbContext)
         {
-            this.dbcontext = dbcontext;
+            this.dbContext = dbContext;
         }
         [HttpGet]
         public IActionResult Add()
@@ -28,9 +29,18 @@ namespace StudentPortal.Web.Controllers
                 Phone = viewModel.Phone,
                 Subscribed = viewModel.Subscribed,
             };
-            await dbcontext.Students.AddAsync(student);
-            await dbcontext.SaveChangesAsync();
+            await dbContext.Students.AddAsync(student);
+            await dbContext.SaveChangesAsync();
             return View();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> List()
+        {
+            var students = await dbContext.Students.ToListAsync();
+
+            return View(students);
+        }
+
     }
 }
