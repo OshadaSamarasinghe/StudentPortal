@@ -31,7 +31,8 @@ namespace StudentPortal.Web.Controllers
             };
             await dbContext.Students.AddAsync(student);
             await dbContext.SaveChangesAsync();
-            return View();
+            //return View();
+            return RedirectToAction("List", "Students");
         }
 
         [HttpGet]
@@ -61,6 +62,18 @@ namespace StudentPortal.Web.Controllers
                 student.Phone = viewModel.Phone;
                 student.Subscribed = viewModel.Subscribed;
 
+                await dbContext.SaveChangesAsync();
+            }
+            return RedirectToAction("List", "Students");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(Student viewModel)
+        {
+            var student = await dbContext.Students.AsNoTracking().FirstOrDefaultAsync(x => x.Id == viewModel.Id);
+            if(student is not null)
+            {
+                dbContext.Students.Remove(viewModel);
                 await dbContext.SaveChangesAsync();
             }
             return RedirectToAction("List", "Students");
